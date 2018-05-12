@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: da72c219920738849975ef97d7a35f52
+timeCreated: 1494045909
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Aon Cari Celtic
+  fontNames:
+  - Aon Cari Celtic
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

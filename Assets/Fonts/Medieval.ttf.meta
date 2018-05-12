@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 77f9fd17852117b42ae65d76e68b1f4b
+timeCreated: 1494045909
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Bouwsma Uncial
+  fontNames:
+  - Bouwsma Uncial
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
