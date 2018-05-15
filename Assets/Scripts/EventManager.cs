@@ -1,7 +1,17 @@
-﻿using UnityEngine;
+﻿// Universidad del Valle de Guatemala
+// Daniel Garcia, 14152
+// Programacion de plataformas moviles y juegos
+
+using UnityEngine;
 using UnityEngine.Events;
 using System.Collections;
 using System.Collections.Generic;
+
+//Todo lo contenido en este script es del tutorial oficial de Unity:
+// https://unity3d.com/learn/tutorials/topics/scripting/events-creating-simple-messaging-system
+//La unica diferencia es que añadi un parametro tipo float al sistema, asi puedo pasar floats entre scripts.
+
+
 
 [System.Serializable]
 public class ThisEvent : UnityEvent<int>

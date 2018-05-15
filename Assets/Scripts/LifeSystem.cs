@@ -24,10 +24,13 @@ public class LifeSystem : MonoBehaviour {
         magica = startingMagica;
 	}
 
+    //registra cuando se tiene una collision con un collider de tipo trigger.
     private void OnTriggerEnter(Collider other)
     {
+        //si el trigger tiene el tag entonces se ejecuta tomar daño o morir dependiendo de la vida que se tenga.
         if (other.gameObject.tag == "EnemyWeapon")
         {
+            //el bloquear reduce el daño a la mitad.
             if(isBlocking == true)
             {
                 life -= (damage/2);
@@ -43,18 +46,12 @@ public class LifeSystem : MonoBehaviour {
                 isAlive = false;
             }
         }
+        //Si se pasa encima de un cristal, recupera energia. Solo es valido cuando se tiene 80 0 menos. Asi se evita el sobrepasarse del limite 100.
         if(other.gameObject.tag == "MagicaPickup")
         {
             if(magica <= 80)
             {
                 magica += 20;
-            }
-        }
-        if (other.gameObject.tag == "HealthPickup")
-        {
-            if (life <= 80)
-            {
-                life += 20;
             }
         }
     }
@@ -75,6 +72,7 @@ public class LifeSystem : MonoBehaviour {
         EventManager.stopListening("BlockModifier", BlockModifier);
     }
 
+    //Revisa si el personaje esta bloqueando con el escudo y modifica el bool respectivo.
     void BlockModifier(int info)
     {
         if(info == 1)
@@ -87,13 +85,14 @@ public class LifeSystem : MonoBehaviour {
         }
     }
 
+    //recupera vida con la primera habilidad, resta a la energia que se tiene. 
     void Spell1(int info)
     {
-        if (magica >= 25)
+        if (magica >= 20)
         {
             magica = magica - info;
             EventManager.triggerEvent("SpellAnimation", 1);
-            life += 20;
+            life += 50;
             if(life >= 100)
             {
                 life = 100;
@@ -101,6 +100,7 @@ public class LifeSystem : MonoBehaviour {
         }
     }
 
+    //Las dos habilidades siguientes solo hacen que se ejecute la animacion. No hacen daño a los enemigos.
     void Spell2(int info)
     {
         if (magica >= 5)
@@ -121,6 +121,7 @@ public class LifeSystem : MonoBehaviour {
         }
     }
 
+    //getters y setters usados para pasar datos al script player movement.
     public int currentLife
     {
         get { return life;}

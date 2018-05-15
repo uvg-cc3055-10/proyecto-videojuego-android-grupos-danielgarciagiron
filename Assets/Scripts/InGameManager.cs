@@ -10,11 +10,11 @@ using UnityEngine;
 
 public class InGameManager : MonoBehaviour {
 
-    //creates the reference to the main character life script
+
     public GameObject player;
     private LifeSystem playerScript;
 
-    //Variables to hold the UI elements
+
     public GameObject pausePanel;
     public GameObject infoPanel;
     public Image healthBar;
@@ -24,7 +24,6 @@ public class InGameManager : MonoBehaviour {
     public Text roundDisplay;
     public Text endResult;
 
-    //variables to display in the HUD about health and magicka
     private float maxHealth = 100;
     private float currentHealth = 100;
     private float maxMagica = 100;
@@ -32,13 +31,13 @@ public class InGameManager : MonoBehaviour {
     private int currentWaveNumber;
     private int roundNumber;
 
-    // Use this for initialization
+
     void Start()
     {
-        //makes the link to the life system script
+        //referencia al script de life system
         playerScript = (LifeSystem)player.GetComponent(typeof(LifeSystem));
 
-        //removes the pause panel from the screen
+        //esconde los paneles de pausa.
         pausePanel.SetActive(false);
         infoPanel.SetActive(false);
         updateBars();
@@ -46,27 +45,27 @@ public class InGameManager : MonoBehaviour {
 
     private void FixedUpdate()
     {
-        //always runs the update bars method
+        //siempre corre este metodo, sirve para poner la info de vida, energia y ronda en pantalla.
         updateBars();
     }
 
-    //displays the correct value in the HUD
+
     public void updateBars()
     {
-        //gives the value from the linked script into this local variable
+        //agarra el valor de vida y lo convierte para poder desplegarlo en pantalla.
         currentHealth = playerScript.currentLife;
         float healthRatio = currentHealth / maxHealth;
         healthBar.rectTransform.localScale = new Vector3(healthRatio, 1, 1);
         healthDisplay.text = (healthRatio * 100f).ToString("0")+"%";
 
-        //gives the value from the linked script into this local variable
+        //Lo mismo pero con el valor de energia.
         currentMagica = playerScript.currentMagica;
         float magicaRatio = currentMagica / maxMagica;
         magicaBar.rectTransform.localScale = new Vector3(magicaRatio, 1, 1);
         magicaDisplay.text = (magicaRatio * 100f).ToString("0") + "%";
     }
 
-    //pauses the game
+    //pausa
     public void pauseOnClick()
     {
         pausePanel.SetActive(true);
@@ -74,14 +73,14 @@ public class InGameManager : MonoBehaviour {
         
     }
 
-    //resumes the game
+    //quita la pausa
     public void unpauseOnClick()
     {
         pausePanel.SetActive(false);
         Time.timeScale=1.0f;
     }
 
-    //exits to main menu, sets the time to normal again
+    //regresa al menu principal
    public void exitOnClick()
     {
         Time.timeScale = 1.0f;
@@ -93,12 +92,14 @@ public class InGameManager : MonoBehaviour {
         SceneManager.LoadScene("CampaignMenu");
     }
 
+    //vuelve a cargar el nivel.
     public void RetryOnClick()
     {
         int Scene = SceneManager.GetActiveScene().buildIndex;
         SceneManager.LoadScene(Scene, LoadSceneMode.Single);
     }
 
+    //Listeners para pasar datos entre scripts.
     void OnEnable()
     {
         EventManager.startListening("RoundDisplay", RoundDisplay);
@@ -111,12 +112,14 @@ public class InGameManager : MonoBehaviour {
         EventManager.stopListening("EndGame", EndGame);
     }
 
+    //actualiza la info del round 
     void RoundDisplay(int info)
     {
         roundNumber++;
         roundDisplay.text = ("Round No." + roundNumber);
     }
 
+    //finaliza el juego, si se gana muestra la pantalla de zona conquistada, si se pierde menciona que se perdio.
     void EndGame(int info)
     {
         infoPanel.SetActive(true);

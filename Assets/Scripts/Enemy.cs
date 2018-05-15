@@ -9,59 +9,59 @@ using UnityEngine;
 [RequireComponent(typeof(UnityEngine.AI.NavMeshAgent))]
 public class Enemy : MonoBehaviour
 {
-    //variables for the enemy animation system
+
     private Animator anim;
     private CharacterController controller;
 
-    //states that indicate the current task of the enemy
+    //maquina de estados finitos para controlar los estados del enemigo. No es necesario puesto que se tienen muy pocos estados.
     public enum State { Idle, Chasing, Attacking, Death };
     State currentState;
 
-    //pathfinder variables to use in the navMesh system
+
     UnityEngine.AI.NavMeshAgent pathfinder;
     Transform target;
 
-    //Variables for the enemy to move around and distances to attack
+
     float attackDistanceThreshold = .5f;
     float timeBetweenAttacks = 1;
     float nextAttackTime;
     float myCollisionRadius=0.75f;
     float targetCollisionRadius=0.75f;
 
-    //control variables
+
     private bool playerIsDead=false;
     private bool hasTarget=true;
     private bool enemyIsDead = false;
     private bool messageSent = false;
 
-    //animator variables
+
     static int attackHash = Animator.StringToHash("attack");
     static int motionHash = Animator.StringToHash("motion");
     static int deathHash = Animator.StringToHash("dead");
 
-    //counter to receive initial values
     private int messageCounter = 0;
 
-    //variables that are inherited
     public int life = 0;
     public int damage = 0;
+
+    //audio
+    public AudioClip attackAudio;
+    AudioSource enemyAudioSource;
 
     void Start()
     {
 
-        //creates reference to the nav mesh and the player to follow
+        //crea la referencia al navmesh para que se puedan mover los enemigos.
         pathfinder = GetComponent<UnityEngine.AI.NavMeshAgent>();
         target = GameObject.FindGameObjectWithTag("Player").transform;
 
-        //controller to play the character's animation
         controller = GetComponent<CharacterController>();
         anim = gameObject.GetComponentInChildren<Animator>();
 
-        //current state that the enemy starts
+        enemyAudioSource = GetComponent<AudioSource>();
+
         currentState = State.Chasing;
 
-
-        //initiate the search if there is a player
         if (playerIsDead == false)
         {
             StartCoroutine(UpdatePath());
@@ -70,12 +70,11 @@ public class Enemy : MonoBehaviour
 
     void Update()
     {
-        //if the enemy is not dead, keep chasing the player
         if (enemyIsDead == false)
         {
-            //looks the current state of the main character and checks its vitality
+            //Verifica si el personaje esta muerto.
             playerIsDead = GameObject.Find("MainCharacter").GetComponent<PlayerMovement>().isDead;
-            //if the player is not dead, keep on chasing
+            //si esta vivo, correr detras de el.
             if (playerIsDead == false)
             {
                 if (Time.time > nextAttackTime)
@@ -84,22 +83,21 @@ public class Enemy : MonoBehaviour
                     if (sqrDstToTarget < Mathf.Pow(attackDistanceThreshold + myCollisionRadius + targetCollisionRadius, 2))
                     {
                         nextAttackTime = Time.time + timeBetweenAttacks;
-                        //jumps to the corroutine in charge of playing the attack animation
+                        //si esta en rango de ataque y ya paso el delay, puede atacar.
                         StartCoroutine(Attack());
                     }
 
                 }
             }
-            //if the main character is dead, stop chasing and plays idle.
+            //si el personaje esta muerto, detenerse y quedarse en idle.
             else
             {
                 anim.SetBool(motionHash, false);
                 currentState = State.Idle;
                 hasTarget = false;
-                
             }
         }
-        //the enemy has died, therefore it plays death animation and can no longer move
+        //Si el enemigo muere, deja de moverse, corre la animacion de morir.
         else
         {
             currentState = State.Death;
@@ -113,10 +111,11 @@ public class Enemy : MonoBehaviour
     }
 
     
-    //makes the enemy attack the player once it is in close proximity
+    //corutina para atacar al personaje si esta en el rango para hacerlo.
     IEnumerator Attack()
     {
         anim.SetTrigger(attackHash);
+        enemyAudioSource.PlayOneShot(attackAudio, 0.5f);
         currentState = State.Attacking;
         pathfinder.enabled = false;
         Vector3 originalPosition = transform.position;
@@ -134,7 +133,7 @@ public class Enemy : MonoBehaviour
         pathfinder.enabled = true;
     }
 
-    ////checks if the player has attacked the enemy, reduces life.
+    //Si el personaje lo golpea, restar vida. Verifica que el collider sea el arma del personaje usando el tag.
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "PlayerWeapon")
@@ -153,7 +152,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    //looks for the player and moves towards it.
+    //Busca al personaje y se mueve hacia el.
     IEnumerator UpdatePath()
     {
         float refreshRate = .25f;

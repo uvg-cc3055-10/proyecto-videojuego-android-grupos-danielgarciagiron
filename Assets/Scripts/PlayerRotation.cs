@@ -19,9 +19,11 @@ public class PlayerRotation : MonoBehaviour
 
     private void Start()
     {
+        //referencia al script de player movement.
         playerScript = (PlayerMovement)player.GetComponent(typeof(PlayerMovement));
     }
 
+    //lo unico que hace es tomar los valores del joystick virtual y ajustar la rotacion para que coincida hacia donde se mueve el personaje con la direccion a la cual este esta viendo.
     void FixedUpdate()
     {
         canMove = playerScript.currentMobility;

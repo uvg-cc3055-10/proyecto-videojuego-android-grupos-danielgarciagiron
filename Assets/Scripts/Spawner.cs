@@ -40,8 +40,12 @@ public class Spawner : MonoBehaviour
 
     void Update()
     {
+        //infinite mode es para tener rondas de enemigos sin terminar.
         if (infiniteMode == false)
         {
+            //Se realiza el "spawn" de enemigos tomando en cuenta el tipo de enemigo (currentID). Si tuviese mas enemigos se podria poner otros numeros y asi spawnear distintos enemigos en las mismas rondas.
+            //Tiene un contador para ver cuantos enemigos faltan y el delay entre enemigos. 
+            //cuando se terminan los enemigos, realiza un ultimo delay distinto antes de iniciar con la siguiente ronda.
             if (gameHasEnded == false)
             {
                 if (enemiesPerRound > 0 && Time.time > nextSpawnTime)
@@ -63,6 +67,7 @@ public class Spawner : MonoBehaviour
             }
             else
             {
+                //cuando se termina el juego y no hay mas rondas o mas vida. 
                 if (hasFinished == false)
                 {
                     EndGame();
@@ -73,6 +78,7 @@ public class Spawner : MonoBehaviour
         }
         else
         {
+            //si esta en infinite mode, spawnea enemigos constantemente.
             if (Time.time>infiniteTimer && playerDeath==false)
             {
                 Enemy spawnedEnemy = Instantiate(enemies[currentID], Vector3.zero, Quaternion.identity) as Enemy;
@@ -82,6 +88,7 @@ public class Spawner : MonoBehaviour
 
     }
 
+    //actualiza la informacion de la siguiente ronda con los delays, cantidad de enemigos, tipo de enemigos, el texto en pantalla, etc.
     void NextWave()
     {
         if (currentWave< waves.Length)
@@ -103,6 +110,7 @@ public class Spawner : MonoBehaviour
         }
     }
 
+    //Listeners para enviar informacion a otros scripts que lo requieran. Ver Event Manager.
     void EndGame()
     {
         EventManager.triggerEvent("EndGame", 1);
@@ -131,6 +139,7 @@ public class Spawner : MonoBehaviour
         remainingEnemies--;
     }
 
+    //Esto permite tener arreglos en el editor de unity y poner valores de forma manual para las distintas rondas de enemigos. 
     [System.Serializable]
     public class Wave
     {

@@ -1,4 +1,8 @@
-﻿using System.Collections;
+﻿// Universidad del Valle de Guatemala
+// Daniel Garcia, 14152
+// Programacion de plataformas moviles y juegos
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
@@ -19,6 +23,7 @@ public class CampaignManager : MonoBehaviour {
         
 	}
 	
+    //regresa al menu principal.
     public void BackOnClick()
     {
         SceneManager.LoadScene("MainMenu");
@@ -33,11 +38,14 @@ public class CampaignManager : MonoBehaviour {
         //Debug.Log(levelID);
     }
 
+    //Lista increiblemente larga de los niveles disponibles (solo existe 1 por el momento). tiene la informacion del nivel en un string el cual actualiza la pantalla al presionar 
+    //el boton del nivel deseado. 
     private void informationDisplay()
     {
         switch (ID)
         {
             case 0:
+                //solo este nivel existe, cuando se presiona, cambia el texto en la pantalla con la siguiente informacion.
                 infoDisplay.text = "Training Grounds, test your skills freely!";
                 levelToLoad = "TrainingGrounds";
                 break;
@@ -174,6 +182,7 @@ public class CampaignManager : MonoBehaviour {
         }
     }
 
+    //Carga el nivel seleccionado
     public void LoadOnClick()
     {
         SceneManager.LoadScene(levelToLoad);

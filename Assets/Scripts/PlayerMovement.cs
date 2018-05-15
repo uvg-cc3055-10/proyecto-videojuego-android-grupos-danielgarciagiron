@@ -7,19 +7,18 @@ using System.Collections;
 
 public class PlayerMovement : MonoBehaviour
 {
-    // Character controller variables
+
     private Animator anim;
     private CharacterController controller;
     private Vector3 moveDirection = Vector3.zero;
     public VirtualJoystick inputJoystick;
 
-    //motion variables
+
     private float horizontal = 0.0f;
     private float vertical = 0.0f;
     private float motion;
 
 
-    //animator control variables
     private float nextAttack = 0.0f;
     private float delay = 1.5f;
     private bool blockVar = false;
@@ -30,7 +29,6 @@ public class PlayerMovement : MonoBehaviour
     private bool canMove = true;
     private bool check = true;
 
-    //spell cooldowns and timer initial values
     private float spell1Cooldown = 10.0f;
     private float spell1NextAttack = 0.0f;
     private float spell2Cooldown = 6.0f;
@@ -38,10 +36,9 @@ public class PlayerMovement : MonoBehaviour
     private float spell3Cooldown = 6.0f;
     private float spell3NextAttack = 0.0f;
 
-    //importing the lifeSystem script
     private LifeSystem playerScript;
 
-    //Animator variables
+    //el usar hashes es una forma de optimizar cuando se tienen bastantes animaciones.
     static int idleState = Animator.StringToHash("Base Layer.Idle");
     static int motionState = Animator.StringToHash("Base Layer.Motion");
     static int attackHash = Animator.StringToHash("attack");
@@ -54,10 +51,9 @@ public class PlayerMovement : MonoBehaviour
     static int deathHash = Animator.StringToHash("dead");
     private AnimatorStateInfo currentBaseState;
 
-    //Variables that are dependent on the items equiped
     private float speed = 0.0F;
 
-    //References to particle systems and their locations
+    //sirve para todos los sistemas de particulas utilizados.
     public GameObject healingLocation;
     public GameObject healingEffect;
     public GameObject destructionLocation;
@@ -68,26 +64,28 @@ public class PlayerMovement : MonoBehaviour
     private GameObject destructionInstance;
     private GameObject groundBreakInstance;
 
+    //Audio 
+    public AudioClip attackAudio;
+    AudioSource playerAudioSource;
 
     void Start()
     {
-        //sets up the player controller and references the animator 
+        //controller y animator 
         controller = GetComponent<CharacterController>();
         anim = gameObject.GetComponentInChildren<Animator>();
 
-        //creates the link betwwen the lifesystem script and the player controller
         playerScript = (LifeSystem)this.GetComponent(typeof(LifeSystem));
 
-        //links the speed to move from the value being read from the lifesystem script
+        playerAudioSource = GetComponent<AudioSource>();
+
         speed = playerScript.currentSpeed;
     }
 
     void FixedUpdate()
     {
-        //checks if the player is dead, if not, proceeds to allow movement and animation
         if (isDead == false)
         {
-            //if the player is idle or running it allows for the player to move
+            //deja que se mueva el jugador si esta en idle
             currentBaseState = anim.GetCurrentAnimatorStateInfo(0);
             if(currentBaseState.fullPathHash == idleState || currentBaseState.fullPathHash==motionState)
             {
@@ -108,7 +106,7 @@ public class PlayerMovement : MonoBehaviour
                 controller.Move(moveDirection * Time.deltaTime);
                 anim.SetFloat(motionHash, motion);
             }
-            //checks if the player is still alive, if not executes death animation and blocks any kind of movement
+            //cuando se muere el personaje, bloquea todos los inputs. 
             isAlive = playerScript.currentStatus;
             if (isAlive==false && check==true)
             {
@@ -124,12 +122,11 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    //sets the animation of blocking with the shield on
         public void blockButtonIn()
     {
         if (isDead == false)
         {
-            //dont allow the player to move, keeps the animation running until stated otherwise
+            //no deja que se mueva el personaje cuando bloquea.
             if (blockVar == false)
             {
                 canMove = false;
@@ -140,7 +137,6 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    //releases the player movement and exits the block animation
     public void blockButtonOut()
     {
         if (isDead == false)
@@ -152,12 +148,14 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    //maneja las dos animaciones para atacar, utiliza timers y contadores.
     public void attackButton()
     {
         if (canMove == true)
         {
             if (Time.time > nextAttack)
             {
+                playerAudioSource.PlayOneShot(attackAudio, 0.5f);
                 switch (attackCounter)
                 {
                     case 1:
@@ -178,20 +176,19 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    ////Runs the spell 1 animation
+    //Sirve para la primera habilidad, utiliza un timer para evitar que se utilice repetidas veces en tiempos cortos.
     public void spell1OnClick()
     {
         if (isDead == false)
         {
             if (Time.time > spell1NextAttack)
             {
-                EventManager.triggerEvent("Spell1", 25);
+                EventManager.triggerEvent("Spell1", 20);
                 spell1NextAttack = Time.time + spell1Cooldown;
             }
         }
     }
 
-    //runs the spell 2 animation
     public void spell2OnClick()
     {
         if (isDead == false)
@@ -204,7 +201,6 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    //runs the spell 3 animation
     public void spell3OnClick()
     {
         if (isDead == false)
@@ -228,6 +224,7 @@ public class PlayerMovement : MonoBehaviour
         EventManager.stopListening("SpellAnimation", SpellAnimation);
     }
 
+    //Spawnea los efectos de las habilidades.
     void SpellAnimation(int info)
     {
         switch (info)
@@ -250,14 +247,12 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    //sends whether or not the player is allowed to move, to the rotation script
     public bool currentMobility
     {
         get { return canMove; }
         set { canMove = value; }   
     }
 
-    //sends wheter or not the rotation ability is active.
     public bool livingStatus
     {
         get { return isDead; }
